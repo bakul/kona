@@ -76,6 +76,18 @@ main(int argc, char** argv)
 
 	{
 	I i;
+	K mat = gtn(0, 2);
+	KK(mat)[0] = gtn(-1,0);
+	KK(mat)[1] = gtn(-1,0);
+	K* p0 = &KK(mat)[0];
+	K* p1 = &KK(mat)[1];
+	i = 0; kap(p0, &i); i = 1; kap(p0, &i);
+	i = 2; kap(p1, &i); i = 3; kap(p1, &i);
+	show(mat);
+	}
+
+	{
+	I i;
 	K d = gtn(5,0);
 	K c0 = gtn(0,0);
 	K c1 = gtn(-1,0);

@@ -226,15 +226,49 @@ K gsk(S s, K k)
 
     Example:
 	K d = gtn(5,1);
-	K t = gsk("foo", gi(12));
-
 	KK(d)[0] = gsk("foo", gi(12));
-	kap(&d, gsk("bar", gf(1.23)));
 
 K kap(K*x, V y)
-    Append item y to list x. The actual type of y depends on
-    the list type of x. Returns x if the append was
-    successful.
+    If x is a list, y is a ptr to an object that can be stored
+    in x.  If x is a integer, char, symbolr or float list, y
+    points an object of the element tyop. Else y points to
+    an object of type K (a pointer).  Append item *y to list
+    x. If x is a dictionary, y points to an object of type K,
+    which in turn points to a triple:  a symbol, an arbitray
+    object and attributes.
+
+    If the size of the list is known, direct copy into its
+    elemement array will be much faster than using kap().
+    kap() is wellsuited for cases where the size is not known
+    apriori.  Returns x if the append was successful.
+
+    Example:
+	K d = gtn(5,0);
+	K t = gsk("bar", gf(1.23)));
+	kap(&d, &t);
+
+	K ints = gtn(-1,0);
+	I i;
+	i = 1; kap(&ints, &i);
+	i = 2; kap(&ints, &i);
+
+    Note that the object pointed to by x may have to be
+    reallocated and the original pointer becomes obsolete. If
+    *x is part of some other object, a ptr in this parent
+    object must be passed in, otherwise the new object will be
+    lost as well as the parent object may end up containing
+    garbage as the space for the old object is reclaimed.
+
+    Example:
+	K mat2x2 = gtn(0,2);
+	KK(mat2x2)[0] = gtn(-1, 0);
+	KK(mat2x2)[1] = gtn(-1, 0);
+	K* p0 = &KK(mat2x2)[0];
+	K* p1 = &KK(mat2x2)[1];
+	i = 0; kap(p0, &i);
+	i = 1; kap(p0, &i);
+	i = 2; kap(p1, &i);
+	i = 3; kap(p1, &i);
 
 Refernce counts
 ---------------
@@ -261,7 +295,7 @@ K ksk(S e, K a)		 [NYI]
 C from K
 --------
 
-K sfn(S s,(K(*f)(),I n)	 [NYI]
+K sfn(S s,(K(*f)(),I n)	 	[NYI]
     Register a C function f to be called from K with the name
     s. It should take n arguments. Returns the function object.
 
